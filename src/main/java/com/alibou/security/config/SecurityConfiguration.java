@@ -12,6 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import static com.alibou.security.user.Permission.ADMIN_CREATE;
 import static com.alibou.security.user.Permission.ADMIN_DELETE;
@@ -52,11 +55,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
+        http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
+                        req.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                                 .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
                                 .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
@@ -72,9 +73,20 @@ public class SecurityConfiguration {
                         logout.logoutUrl("/api/v1/auth/logout")
                                 .addLogoutHandler(logoutHandler)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
-
+                );
         return http.build();
+    }
+
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }

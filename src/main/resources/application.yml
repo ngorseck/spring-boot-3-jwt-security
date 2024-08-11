@@ -3,10 +3,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/jwt_security
     username: username
     password: password
+    #url: jdbc:postgresql://localhost:5432/dbjwt
+    #username: diagana
+    #password: passer
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      #ddl-auto: create-drop
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
