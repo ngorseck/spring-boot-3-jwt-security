@@ -1,19 +1,20 @@
 package com.alibou.security;
 
+import com.alibou.security.auth.AuthenticationResponse;
 import com.alibou.security.auth.AuthenticationService;
 import com.alibou.security.auth.RegisterRequest;
-import com.alibou.security.user.Role;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import static com.alibou.security.user.Role.ADMIN;
-import static com.alibou.security.user.Role.MANAGER;
+import static com.alibou.security.user.Role.*;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
+@Slf4j
 public class SecurityApplication {
 
 	public static void main(String[] args) {
@@ -32,7 +33,8 @@ public class SecurityApplication {
 					.password("password")
 					.role(ADMIN)
 					.build();
-			System.out.println("Admin token: " + service.register(admin).getAccessToken());
+			AuthenticationResponse authenticationResponse =  service.register(admin);
+			log.info ("Admin token: {}", authenticationResponse.getAccessToken());
 
 			var manager = RegisterRequest.builder()
 					.firstname("Admin")
@@ -41,7 +43,18 @@ public class SecurityApplication {
 					.password("password")
 					.role(MANAGER)
 					.build();
-			System.out.println("Manager token: " + service.register(manager).getAccessToken());
+			authenticationResponse =  service.register(manager);
+			log.info("Manager token: {}", authenticationResponse.getAccessToken());
+
+			var user = RegisterRequest.builder()
+					.firstname("User")
+					.lastname("User")
+					.email("user@mail.com")
+					.password("password")
+					.role(USER)
+					.build();
+			authenticationResponse =  service.register(user);
+			log.info("Manager token: {}", authenticationResponse.getAccessToken());
 
 		};
 	}

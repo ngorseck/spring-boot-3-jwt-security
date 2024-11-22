@@ -1,12 +1,17 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/jwt_security
-    username: username
-    password: password
+    url: ${DB_URL:jdbc:h2:mem:security-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${DB_USER:username}
+    password: ${DB_PAWORD:password}
+    driver-class-name: org.h2.Driver
+#    url: ${DB_URL:jdbc:postgresql://localhost:5432/jwt_security_db}
+#    username: ${DB_USER:username}
+#    password: ${DB_PAWORD:password}
+#    driver-class-name: org.postgresql.Driver
     #url: jdbc:postgresql://localhost:5432/dbjwt
     #username: diagana
     #password: passer
-    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       #ddl-auto: create-drop
@@ -15,8 +20,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
+#    database: postgresql
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 application:
   security:
